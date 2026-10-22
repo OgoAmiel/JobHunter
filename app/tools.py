@@ -3,6 +3,8 @@ import re
 
 from agents import function_tool
 
+from app.services.adzuna import search_jobs as fetch_adzuna_jobs
+
 
 SAMPLE_JOBS = [
     {
@@ -77,3 +79,34 @@ def search_demo_jobs(keyword: str) -> str:
         "count": len(matches),
         "jobs": matches,
     })
+
+
+@function_tool
+async def search_live_jobs(
+    keyword: str,
+    location: str = "Johannesburg",
+) -> str:
+    """
+    Search real job advertisements from Adzuna
+    using job-related keywords and a location.
+    """
+
+    try:
+        jobs = await fetch_adzuna_jobs(
+            keyword=keyword,
+            location=location,
+            limit=5,
+        )
+
+        return json.dumps({
+            "source": "Adzuna",
+            "is_demo": False,
+            "count": len(jobs),
+            "jobs": jobs,
+        })
+
+    except (ValueError, RuntimeError) as error:
+        return json.dumps({
+            "error": str(error),
+            "jobs": [],
+        })

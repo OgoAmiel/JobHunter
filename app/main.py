@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from agents import Runner
 
-from app.agent import evaluate_job, job_search_agent
+from app.agent import evaluate_job, job_search_agent, real_job_search_agent
 from app.schemas import (
     JobMatchRequest,
     JobMatchResult,
@@ -34,6 +34,20 @@ async def agent_demo_search(request: AgentSearchRequest):
 
     result = await Runner.run(
         job_search_agent,
+        request.message,
+        max_turns=5,
+    )
+
+    return {
+        "response": result.final_output
+    }
+
+
+@app.post("/agent/search")
+async def search_real_jobs(request: AgentSearchRequest):
+
+    result = await Runner.run(
+        real_job_search_agent,
         request.message,
         max_turns=5,
     )
