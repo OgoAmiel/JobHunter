@@ -8,9 +8,7 @@ class CandidateProfile(BaseModel):
     skills: list[str] = Field(default_factory=list)
     experience: list[str] = Field(default_factory=list)
     certifications: list[str] = Field(default_factory=list)
-    professional_registrations: list[str] = Field(
-        default_factory=list
-    )
+    professional_registrations: list[str] | None = None
 
 
 class JobMatchRequest(BaseModel):

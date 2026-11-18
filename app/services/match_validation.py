@@ -86,12 +86,6 @@ def validate_match_result(
             source_description,
         )
 
-        if evidence is None:
-            evidence = find_source_quote(
-                item.requirement,
-                source_description,
-            )
-
         if evidence is not None:
             item.job_evidence = evidence
             verified_requirements.append(item)
@@ -187,7 +181,15 @@ def validate_match_result(
     # 6. UPDATE OVERALL RECOMMENDATION
     # ==========================================
 
-    if warnings:
+    has_mandatory_conflict = any(
+    item.category == "mandatory"
+    and item.status == "not_met"
+    for item in validated.requirements
+)
+    if has_mandatory_conflict:
+        validated.recommendation = "requirements_conflict"
+
+    elif warnings:
         validated.recommendation = "review_required"
 
     return validated
